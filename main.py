@@ -1,12 +1,17 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QAction, QFileDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QAction, QFileDialog, QLabel
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap
 import sys
+from pathlib import Path
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
+
+        # This variable will be used to remember last directory
+        self.openDir = ''
         self.setGeometry(200, 200, 500, 300)
         self.setWindowTitle("Experimental Image Processing Tool")
 
@@ -16,7 +21,8 @@ class MainWindow(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        pass
+        self.centralLabel = QLabel()
+        self.setCentralWidget(self.centralLabel)
 
     def _createActions(self):
         self.openAction = QAction("&Open...", self)
@@ -50,9 +56,16 @@ class MainWindow(QMainWindow):
         helpMenu.addAction(self.aboutAction)
 
     def openFile(self):
+        # set default directory path
+        if self.openDir == '':
+            self.openDir = 'c:\\'
         # Logic for opening an existing file goes here...
-        filename = QFileDialog.getOpenFileName(self, 'Open file', 'c:\\', "Image files (*.jpg *.jpeg *.gif *.png)")
-        print(filename)
+        filename = QFileDialog.getOpenFileName(self, self.tr('Open file'), self.openDir, "Image files (*.jpg *.jpeg *.gif *.png)")
+        p = Path(filename[0])
+        self.openDir = str(p.parent)
+        imagePath = filename[0]
+        pixmap = QPixmap(imagePath)
+        self.centralLabel.setPixmap(pixmap.scaled(self.centralLabel.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
     def saveFile(self):
         # Logic for saving a file goes here...
