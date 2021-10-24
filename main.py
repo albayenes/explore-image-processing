@@ -1,26 +1,24 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QAction
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QAction, QFileDialog
 from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
 import sys
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
-        super().__init__()
+        super(MainWindow, self).__init__()
         self.setGeometry(200, 200, 500, 300)
         self.setWindowTitle("Experimental Image Processing Tool")
 
         self._createActions()
         self._createMenuBar()
+        self._connectActions()
         self.initUI()
 
     def initUI(self):
         pass
 
     def _createActions(self):
-        # Creating action using the first constructor
-        self.newAction = QAction(self)
-        self.newAction.setText("&New")
-        # Creating actions using the second constructor
         self.openAction = QAction("&Open...", self)
         self.saveAction = QAction("&Save", self)
         self.exitAction = QAction("&Exit", self)
@@ -38,7 +36,6 @@ class MainWindow(QMainWindow):
         helpMenu = QMenu("&Help", self)
 
         menuBar.addMenu(fileMenu)
-        fileMenu.addAction(self.newAction)
         fileMenu.addAction(self.openAction)
         fileMenu.addAction(self.saveAction)
         fileMenu.addAction(self.exitAction)
@@ -51,6 +48,48 @@ class MainWindow(QMainWindow):
         menuBar.addMenu(helpMenu)
         helpMenu.addAction(self.helpContentAction)
         helpMenu.addAction(self.aboutAction)
+
+    def openFile(self):
+        # Logic for opening an existing file goes here...
+        filename = QFileDialog.getOpenFileName(self, 'Open file', 'c:\\', "Image files (*.jpg *.jpeg *.gif *.png)")
+        print(filename)
+
+    def saveFile(self):
+        # Logic for saving a file goes here...
+        self.centralWidget.setText("<b>File > Save</b> clicked")
+
+    def copyContent(self):
+        # Logic for copying content goes here...
+        self.centralWidget.setText("<b>Edit > Copy</b> clicked")
+
+    def pasteContent(self):
+        # Logic for pasting content goes here...
+        self.centralWidget.setText("<b>Edit > Paste</b> clicked")
+
+    def cutContent(self):
+        # Logic for cutting content goes here...
+        self.centralWidget.setText("<b>Edit > Cut</b> clicked")
+
+    def helpContent(self):
+        # Logic for launching help goes here...
+        self.centralWidget.setText("<b>Help > Help Content...</b> clicked")
+
+    def about(self):
+        # Logic for showing an about dialog content goes here...
+        self.centralWidget.setText("<b>Help > About...</b> clicked")
+
+    def _connectActions(self):
+        # Connect File actions
+        self.openAction.triggered.connect(self.openFile)
+        self.saveAction.triggered.connect(self.saveFile)
+        self.exitAction.triggered.connect(self.close)
+        # Connect Edit actions
+        self.copyAction.triggered.connect(self.copyContent)
+        self.pasteAction.triggered.connect(self.pasteContent)
+        self.cutAction.triggered.connect(self.cutContent)
+        # Connect Help actions
+        self.helpContentAction.triggered.connect(self.helpContent)
+        self.aboutAction.triggered.connect(self.about)
 
 
 def window():
