@@ -1,9 +1,11 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QAction, QFileDialog, QLabel
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap
 import sys
 from pathlib import Path
+from PyQt5.QtWidgets import QApplication, QMainWindow, \
+    QMenu, QAction, QFileDialog, QHBoxLayout, \
+    QLabel, QListWidget, QListWidgetItem, QWidget
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtCore import Qt, QSize
+
 
 
 class MainWindow(QMainWindow):
@@ -21,8 +23,24 @@ class MainWindow(QMainWindow):
         self.initUI()
 
     def initUI(self):
+
+        self.imageListWidget = QListWidget()
+        self.imageListWidget.setViewMode(QListWidget.IconMode)
+
+        self.imageListWidget.setResizeMode(QListWidget.Adjust)
         self.centralLabel = QLabel()
-        self.setCentralWidget(self.centralLabel)
+
+        self.hBoxLayout = QHBoxLayout()
+        self.hBoxLayout.addWidget(self.imageListWidget, 0)
+        self.hBoxLayout.addWidget(self.centralLabel, 1)
+
+        mainWidget = QWidget()
+        mainWidget.setLayout(self.hBoxLayout)
+        self.setCentralWidget(mainWidget)
+
+
+
+
 
     def _createActions(self):
         self.openAction = QAction("&Open...", self)
@@ -61,11 +79,19 @@ class MainWindow(QMainWindow):
             self.openDir = 'c:\\'
         # Logic for opening an existing file goes here...
         filename = QFileDialog.getOpenFileName(self, self.tr('Open file'), self.openDir, "Image files (*.jpg *.jpeg *.gif *.png)")
+        print(filename)
         p = Path(filename[0])
         self.openDir = str(p.parent)
         imagePath = filename[0]
         pixmap = QPixmap(imagePath)
         self.centralLabel.setPixmap(pixmap.scaled(self.centralLabel.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        print(filename)
+        item = QListWidgetItem(QIcon(imagePath), p.name)
+        print(filename)
+       # self.imageListWidget.addItem(item)
+
+        print(filename)
+
 
     def saveFile(self):
         # Logic for saving a file goes here...
