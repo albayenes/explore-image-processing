@@ -90,7 +90,11 @@ class MainWindow(QMainWindow):
         print(self.imageListWidget.currentItem().getImagePath())
         pixmap = QPixmap(self.imageListWidget.currentItem().getImagePath())
         print("change image of label")
-        self.centralLabel.setPixmap(pixmap.scaled(self.centralLabel.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        if (self.centralLabel.size().width() < pixmap.width()) or (self.centralLabel.size().height() < pixmap.height()):
+            self.centralLabel.setPixmap(pixmap.scaled(self.centralLabel.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        else:
+            self.centralLabel.setPixmap(pixmap)
+
 
 
     def openFile(self):
@@ -103,8 +107,7 @@ class MainWindow(QMainWindow):
         p = Path(filename[0])
         self.openDir = str(p.parent)
         imagePath = filename[0]
-        pixmap = QPixmap(imagePath)
-        self.centralLabel.setPixmap(pixmap.scaled(self.centralLabel.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.centralLabel.setAlignment(Qt.AlignCenter)
         print(filename)
         item = ImageListWidgetItem(QIcon(imagePath), p.name)
         item.setImagePath(filename[0])
