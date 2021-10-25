@@ -7,6 +7,18 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt, QSize
 
 
+class ImageListWidgetItem(QListWidgetItem):
+    """ ImageListWidgetItem(pathToImage = str) """
+    def __init__(self, *args):
+        super(ImageListWidgetItem, self).__init__(*args)
+        self.pathToImage = None
+
+    def setImagePath(self, path):
+        self.imagePath_ = path
+
+    def getImagePath(self):
+        return self.imagePath_
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -17,17 +29,19 @@ class MainWindow(QMainWindow):
         self.setGeometry(200, 200, 500, 300)
         self.setWindowTitle("Experimental Image Processing Tool")
 
+        self.initUI()
         self._createActions()
         self._createMenuBar()
         self._connectActions()
-        self.initUI()
+
 
     def initUI(self):
 
         self.imageListWidget = QListWidget()
         self.imageListWidget.setViewMode(QListWidget.IconMode)
-
+        self.imageListWidget.setIconSize(QSize(128, 128))
         self.imageListWidget.setResizeMode(QListWidget.Adjust)
+        self.imageListWidget.setFixedWidth(156)
         self.centralLabel = QLabel()
 
         self.hBoxLayout = QHBoxLayout()
@@ -38,9 +52,7 @@ class MainWindow(QMainWindow):
         mainWidget.setLayout(self.hBoxLayout)
         self.setCentralWidget(mainWidget)
 
-
-
-
+        self.imageListWidget.itemSelectionChanged.connect(self.changeLabelImage)
 
     def _createActions(self):
         self.openAction = QAction("&Open...", self)
@@ -73,6 +85,14 @@ class MainWindow(QMainWindow):
         helpMenu.addAction(self.helpContentAction)
         helpMenu.addAction(self.aboutAction)
 
+    def changeLabelImage(self):
+        print("change image of label")
+        print(self.imageListWidget.currentItem().getImagePath())
+        pixmap = QPixmap(self.imageListWidget.currentItem().getImagePath())
+        print("change image of label")
+        self.centralLabel.setPixmap(pixmap.scaled(self.centralLabel.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+
+
     def openFile(self):
         # set default directory path
         if self.openDir == '':
@@ -86,12 +106,13 @@ class MainWindow(QMainWindow):
         pixmap = QPixmap(imagePath)
         self.centralLabel.setPixmap(pixmap.scaled(self.centralLabel.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
         print(filename)
-        item = QListWidgetItem(QIcon(imagePath), p.name)
+        item = ImageListWidgetItem(QIcon(imagePath), p.name)
+        item.setImagePath(filename[0])
         print(filename)
-       # self.imageListWidget.addItem(item)
+        self.imageListWidget.addItem(item)
+        self.imageListWidget.setCurrentItem(item)
 
         print(filename)
-
 
     def saveFile(self):
         # Logic for saving a file goes here...
@@ -129,7 +150,6 @@ class MainWindow(QMainWindow):
         # Connect Help actions
         self.helpContentAction.triggered.connect(self.helpContent)
         self.aboutAction.triggered.connect(self.about)
-
 
 def window():
     # Setup application for operating system
