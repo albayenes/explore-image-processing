@@ -2,7 +2,8 @@ import sys
 from pathlib import Path
 from PyQt5.QtWidgets import QApplication, QMainWindow, \
     QMenu, QAction, QFileDialog, QHBoxLayout, \
-    QLabel, QListWidget, QListWidgetItem, QWidget, QStatusBar
+    QLabel, QListWidget, QListWidgetItem, QWidget, \
+    QStatusBar, QMessageBox
 from PyQt5.QtGui import QIcon, QPixmap, QImage, QColor
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, QThread, QRunnable, QObject, pyqtSlot, QThreadPool
 
@@ -173,7 +174,6 @@ class MainWindow(QMainWindow):
         helpMenu.addAction(self.helpContentAction)
         helpMenu.addAction(self.aboutAction)
 
-
     def numpy2QPixmap(self, img):
         if len(img.shape) == 3:
             height, width, channel = img.shape
@@ -189,7 +189,6 @@ class MainWindow(QMainWindow):
 
         pixmap = QPixmap(qImg)
         self.resizeImageAccordingToWindow(pixmap)
-
 
     def resizeImageAccordingToWindow(self, pixmap):
         if (self.centralLabel.size().width() < pixmap.width()) or (self.centralLabel.size().height() < pixmap.height()):
@@ -273,8 +272,16 @@ class MainWindow(QMainWindow):
     def showFinishedMessage(self):
         self.statusBar.showMessage("Completed.", 2000)
 
-
     def scikitRGB2Gray(self):
+        if self.imageListWidget.count() == 0:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setText("No image selected!")
+            msg.setInformativeText("Please select image before applying algorithm")
+            msg.setWindowTitle("No image")
+            msg.setStandardButtons(QMessageBox.Ok)
+            return msg.exec_()
+
         worker = Worker(ColorManipulation.convertRGB2Gray, self.imageListWidget.currentItem().imageInOriginalSize)
         worker.signals.result.connect(self.numpy2QPixmap)
         worker.signals.finished.connect(self.showFinishedMessage)
