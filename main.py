@@ -82,9 +82,6 @@ class ImageListWidgetItem(QListWidgetItem):
     """ ImageListWidgetItem(pathToImage = str) """
     def __init__(self, *args):
         super(ImageListWidgetItem, self).__init__(*args[1:])
-        print(args[0])
-        print(args[1])
-        print(args[2])
         self.pathToImage = args[0]
         self.imageInOriginalSize = imread(self.pathToImage)
 
@@ -201,8 +198,6 @@ class MainWindow(QMainWindow):
             heightRatio = self.centralLabel.height() / pixmap.height()
             widthRatio = self.centralLabel.width() / pixmap.width()
 
-            print(heightRatio, widthRatio)
-
             if heightRatio < widthRatio:
                 self.statusBar.showMessage("Zoom ratio: %{:.2f}".format(heightRatio * 100), 2000)
             else:
@@ -217,12 +212,8 @@ class MainWindow(QMainWindow):
             if self.imageListWidget.currentItem() is not None:
                 pixmap = self.numpy2QPixmap(self.imageListWidget.currentItem().imageInOriginalSize)
 
-
     def changeLabelImage(self):
-        print("change image of label")
-        print(self.imageListWidget.currentItem().pathToImage)
         pixmap = QPixmap(self.imageListWidget.currentItem().pathToImage)
-        print("change image of label")
         self.resizeImageAccordingToWindow(pixmap)
 
     def openFile(self):
@@ -231,18 +222,13 @@ class MainWindow(QMainWindow):
             self.openDir = 'c:\\'
         # Logic for opening an existing file goes here...
         filename = QFileDialog.getOpenFileName(self, self.tr('Open file'), self.openDir, "Image files (*.jpg *.jpeg *.gif *.png)")
-        print(filename)
         p = Path(filename[0])
         self.openDir = str(p.parent)
         imagePath = filename[0]
         self.centralLabel.setAlignment(Qt.AlignCenter)
-        print(filename)
         item = ImageListWidgetItem(imagePath, QIcon(imagePath), p.name)
-        print(filename)
         self.imageListWidget.addItem(item)
         self.imageListWidget.setCurrentItem(item)
-
-        print(filename)
 
     def saveFile(self):
         # Logic for saving a file goes here...
